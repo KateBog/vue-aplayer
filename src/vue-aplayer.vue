@@ -21,29 +21,34 @@
         @dragging="onDragAround"
       />
       <div class="aplayer-info" v-show="!mini">
+        <div v-if="!isLoaded" class="not-loaded">
+          Listening to each audio sent by your correspondent costs 10 credits.
+        </div>
         <!--<div class="aplayer-music">-->
           <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
           <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
         <!--</div>-->
-        <slot name="display" :current-music="currentMusic" :play-stat="playStat">
-          <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc" />
-        </slot>
-        <controls
-          :shuffle="shouldShuffle"
-          :repeat="repeatMode"
-          :stat="playStat"
-          :volume="audioVolume"
-          :muted="isAudioMuted"
-          :theme="currentTheme"
-          @toggleshuffle="shouldShuffle = !shouldShuffle"
-          @togglelist="showList = !showList"
-          @togglemute="toggleMute"
-          @setvolume="setAudioVolume"
-          @dragbegin="onProgressDragBegin"
-          @dragend="onProgressDragEnd"
-          @dragging="onProgressDragging"
-          @nextmode="setNextMode"
-        />
+        <template v-else>
+          <slot name="display" :current-music="currentMusic" :play-stat="playStat">
+            <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc" />
+          </slot>
+          <controls
+              :shuffle="shouldShuffle"
+              :repeat="repeatMode"
+              :stat="playStat"
+              :volume="audioVolume"
+              :muted="isAudioMuted"
+              :theme="currentTheme"
+              @toggleshuffle="shouldShuffle = !shouldShuffle"
+              @togglelist="showList = !showList"
+              @togglemute="toggleMute"
+              @setvolume="setAudioVolume"
+              @dragbegin="onProgressDragBegin"
+              @dragend="onProgressDragEnd"
+              @dragging="onProgressDragging"
+              @nextmode="setNextMode"
+          />
+        </template>
       </div>
     </div>
     <audio ref="audio"></audio>
@@ -100,10 +105,7 @@
     props: {
       music: {
         type: Object,
-        required: true,
-        validator (song) {
-          return !song.src
-        },
+        required: false,
       },
       list: {
         type: Array,
@@ -112,6 +114,10 @@
         },
       },
       mini: {
+        type: Boolean,
+        default: false,
+      },
+      isLoaded: {
         type: Boolean,
         default: false,
       },
@@ -432,6 +438,12 @@
       // play/pause
 
       toggle () {
+        if (!this.isLoaded) {
+          this.$emit('load')
+
+          return
+        }
+
         if (!this.audio.paused) {
           this.pause()
         } else {
@@ -676,7 +688,7 @@
         this.audio.addEventListener('ended', this.onAudioEnded)
 
 
-        if (this.currentMusic) {
+        if (this.currentMusic.src) {
           this.audio.src = this.currentMusic.src
         }
       },
@@ -708,6 +720,14 @@
         this.internalMusic = music
       },
 
+      isLoaded (value) {
+        if (value && this.src !== null) {
+          this.$nextTick(() => {
+            this.play()
+          })
+        }
+      },
+
       currentMusic: {
         handler (music) {
           // async
@@ -737,7 +757,20 @@
               }
             }
           } else {
-            this.audio.src = src
+            // this.audio.src = src
+
+            if (typeof src === 'string') {
+              this.audio.src = src
+              console.log('play string')
+            } else {
+              src.forEach((item) => {
+                const $src = document.createElement('source')
+                $src.src = item.src
+                $src.type = item.type
+                this.audio.appendChild($src)
+                console.log('play array')
+              })
+            }
           }
           // self-adapting theme color
         },
@@ -819,6 +852,11 @@
     overflow: visible;
     user-select: none;
     line-height: initial;
+
+    .not-loaded {
+      font-size: 11px;
+      color: #999;
+    }
 
     * {
       box-sizing: content-box;

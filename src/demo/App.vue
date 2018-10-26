@@ -1,39 +1,37 @@
 <template>
   <div id="app">
     <div class="container">
-      <h1 align="center">Vue-APlayer</h1>
-      <h3>Basic (zero config)</h3>
+      <h1 align="center">SocialTech</h1>
+      <h3>Simple audio player</h3>
       <aplayer
+          :is-loaded="isLoaded"
           theme="#35495e"
-          :music="{
-          title: 'secret base',
-          artist: 'Silent Siren',
-          src: 'http://0.0.0.0:3000/aplayer/secretbase.mp3',
-        }"
+          :music="{ src }"
+          @load="load"
       />
-
-      <h3>Featured</h3>
-      <aplayer
-          autoplay
-          theme="pic"
-          shuffle
-          repeat="list"
-          show-lrc
-          :muted.sync="muted"
-          :volume.sync="volume"
-          :music='list3[0]'
-          :list='list3'
-      />
-      <h3>Mini mode / Float mode (try dragging it around)</h3>
-      <aplayer
-          mini
-          float
-          :music="{
-          title: 'トリカゴ',
-          artist: 'XX:me',
-          src: 'http://0.0.0.0:3000/aplayer/darling.mp3',
-        }"
-      />
+      http://0.0.0.0:3000/aplayer/secretbase.mp3
+      <!--<h3>Featured</h3>-->
+      <!--<aplayer-->
+      <!--autoplay-->
+      <!--theme="pic"-->
+      <!--shuffle-->
+      <!--repeat="list"-->
+      <!--show-lrc-->
+      <!--:muted.sync="muted"-->
+      <!--:volume.sync="volume"-->
+      <!--:music='list3[0]'-->
+      <!--:list='list3'-->
+      <!--/>-->
+      <!--<h3>Mini mode / Float mode (try dragging it around)</h3>-->
+      <!--<aplayer-->
+      <!--mini-->
+      <!--float-->
+      <!--:music="{-->
+      <!--title: 'トリカゴ',-->
+      <!--artist: 'XX:me',-->
+      <!--src: 'http://0.0.0.0:3000/aplayer/darling.mp3',-->
+      <!--}"-->
+      <!--/>-->
     </div>
   </div>
 </template>
@@ -45,12 +43,25 @@
     components: {
       Aplayer,
     },
+    methods: {
+      load (a, b) {
+        // alert('fire')
+
+        this.src = [{
+          src: 'http://0.0.0.0:3000/aplayer/secretbase.mp3',
+          type: 'audio/mp3',
+        }]
+        this.isLoaded = true
+      },
+    },
     data () {
       return {
         version: VERSION,
         volume: 1,
         muted: false,
         music3: null,
+        src: null,
+        isLoaded: false,
         list3: [
           {
             title: 'sfsdfs',
