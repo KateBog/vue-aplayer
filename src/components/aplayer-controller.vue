@@ -1,44 +1,44 @@
 <template>
   <div class="aplayer-controller">
     <v-progress
-      :loadProgress="loadProgress"
-      :playProgress="playProgress"
-      :theme="theme"
-      @dragbegin="val => $emit('dragbegin', val)"
-      @dragend="val => $emit('dragend', val)"
-      @dragging="val => $emit('dragging', val)"
+        :loadProgress="loadProgress"
+        :playProgress="playProgress"
+        :theme="theme"
+        @dragbegin="val => $emit('dragbegin', val)"
+        @dragend="val => $emit('dragend', val)"
+        @dragging="val => $emit('dragging', val)"
     />
     <div class="aplayer-time">
       <div class="aplayer-time-inner">
-        - <span class="aplayer-ptime">{{secondToTime(stat.playedTime)}}</span> / <span
-        class="aplayer-dtime">{{secondToTime(stat.duration)}}</span>
+        <span class="aplayer-ptime">{{secondToTime(stat.playedTime)}}</span> / <span
+          class="aplayer-dtime">{{secondToTime(stat.duration)}}</span>
       </div>
       <volume
-        v-if="!$parent.isMobile"
-        :volume="volume"
-        :theme="theme"
-        :muted="muted"
-        @togglemute="$emit('togglemute')"
-        @setvolume="v => $emit('setvolume', v)"
+          v-if="!$parent.isMobile"
+          :volume="volume"
+          :theme="theme"
+          :muted="muted"
+          @togglemute="$emit('togglemute')"
+          @setvolume="v => $emit('setvolume', v)"
       />
-      <icon-button
-        class="aplayer-icon-mode"
-        icon="shuffle"
-        :class="{ 'inactive': !shuffle }"
-        @click.native="$emit('toggleshuffle')"
-      />
-      <icon-button
-        class="aplayer-icon-mode"
-        :icon="repeat === 'repeat-one' ? 'repeat-one' : 'repeat-all'"
-        :class="{ 'inactive': repeat === 'no-repeat'}"
-        @click.native="$emit('nextmode')"
-      />
-      <icon-button
-        class="aplayer-icon-menu"
-        icon="menu"
-        :class="{ 'inactive': !$parent.showList }"
-        @click.native="$emit('togglelist')"
-      />
+      <!--<icon-button-->
+          <!--class="aplayer-icon-mode"-->
+          <!--icon="shuffle"-->
+          <!--:class="{ 'inactive': !shuffle }"-->
+          <!--@click.native="$emit('toggleshuffle')"-->
+      <!--/>-->
+      <!--<icon-button-->
+          <!--class="aplayer-icon-mode"-->
+          <!--:icon="repeat === 'repeat-one' ? 'repeat-one' : 'repeat-all'"-->
+          <!--:class="{ 'inactive': repeat === 'no-repeat'}"-->
+          <!--@click.native="$emit('nextmode')"-->
+      <!--/>-->
+      <!--<icon-button-->
+          <!--class="aplayer-icon-menu"-->
+          <!--icon="menu"-->
+          <!--:class="{ 'inactive': !$parent.showList }"-->
+          <!--@click.native="$emit('togglelist')"-->
+      <!--/>-->
     </div>
   </div>
 </template>
@@ -87,7 +87,6 @@
 <style lang="scss">
 
   .aplayer-controller {
-    display: flex;
     align-items: center;
     position: relative;
 
@@ -98,7 +97,8 @@
       height: 17px;
       color: #999;
       font-size: 11px;
-      padding-left: 7px;
+      padding-top: 4px;
+      padding-left: 0px;
 
       .aplayer-volume-wrap {
         margin-left: 4px;

@@ -21,10 +21,10 @@
         @dragging="onDragAround"
       />
       <div class="aplayer-info" v-show="!mini">
-        <div class="aplayer-music">
-          <span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>
-          <span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>
-        </div>
+        <!--<div class="aplayer-music">-->
+          <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
+          <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
+        <!--</div>-->
         <slot name="display" :current-music="currentMusic" :play-stat="playStat">
           <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc" />
         </slot>
@@ -816,7 +816,7 @@
     margin: 5px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.07), 0 1px 5px 0 rgba(0, 0, 0, 0.1);
     border-radius: 2px;
-    overflow: hidden;
+    overflow: visible;
     user-select: none;
     line-height: initial;
 
@@ -841,7 +841,7 @@
         padding: 14px 7px 0 10px;
         height: $aplayer-height;
         box-sizing: border-box;
-        overflow: hidden;
+        overflow: visible;
 
         .aplayer-music {
           flex-grow: 1;
