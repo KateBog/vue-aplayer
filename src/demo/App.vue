@@ -7,8 +7,9 @@
           :is-loaded="isLoaded"
           theme="#35495e"
           :music="{ src }"
-          @load="load"
-      />
+          @load="load">
+        <div class="not-loaded">Listening to each audio sent by your correspondent costs 10 credits.</div>
+      </aplayer>
       http://0.0.0.0:3000/aplayer/secretbase.mp3
       <!--<h3>Featured</h3>-->
       <!--<aplayer-->
@@ -45,8 +46,6 @@
     },
     methods: {
       load (a, b) {
-        // alert('fire')
-
         this.src = [{
           src: 'http://0.0.0.0:3000/aplayer/secretbase.mp3',
           type: 'audio/mp3',
@@ -114,6 +113,11 @@
 
   #app {
     text-align: center;
+  }
+
+  .not-loaded {
+    font-size: 11px;
+    color: #999;
   }
 
   .container {

@@ -21,9 +21,8 @@
         @dragging="onDragAround"
       />
       <div class="aplayer-info" v-show="!mini">
-        <div v-if="!isLoaded" class="not-loaded">
-          Listening to each audio sent by your correspondent costs 10 credits.
-        </div>
+        <slot v-if="!isLoaded">
+        </slot>
         <!--<div class="aplayer-music">-->
           <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
           <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
@@ -686,11 +685,6 @@
         this.audio.addEventListener('timeupdate', this.onAudioTimeUpdate)
         this.audio.addEventListener('volumechange', this.onAudioVolumeChange)
         this.audio.addEventListener('ended', this.onAudioEnded)
-
-
-        if (this.currentMusic.src) {
-          this.audio.src = this.currentMusic.src
-        }
       },
 
       setSelfAdaptingTheme () {
@@ -852,11 +846,6 @@
     overflow: visible;
     user-select: none;
     line-height: initial;
-
-    .not-loaded {
-      font-size: 11px;
-      color: #999;
-    }
 
     * {
       box-sizing: content-box;
