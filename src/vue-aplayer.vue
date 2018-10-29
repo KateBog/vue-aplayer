@@ -1,35 +1,35 @@
 <template>
   <div
-    class="aplayer"
-    :class="{
+      class="aplayer"
+      :class="{
       'aplayer-mini': mini,
       'aplayer-withlist' : !mini && musicList.length > 0,
       'aplayer-withlrc': !mini && (!!$slots.display || showLrc),
       'aplayer-float': isFloatMode,
       'aplayer-loading': isPlaying && isLoading
     }"
-    :style="floatStyleObj"
+      :style="floatStyleObj"
   >
     <div class="aplayer-body">
       <thumbnail
-        :pic="currentMusic.pic"
-        :playing="isPlaying"
-        :enable-drag="isFloatMode"
-        :theme="currentTheme"
-        @toggleplay="toggle"
-        @dragbegin="onDragBegin"
-        @dragging="onDragAround"
+          :pic="currentMusic.pic"
+          :playing="isPlaying"
+          :enable-drag="isFloatMode"
+          :theme="currentTheme"
+          @toggleplay="toggle"
+          @dragbegin="onDragBegin"
+          @dragging="onDragAround"
       />
       <div class="aplayer-info" v-show="!mini">
         <slot v-if="!isLoaded">
         </slot>
         <!--<div class="aplayer-music">-->
-          <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
-          <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
+        <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
+        <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
         <!--</div>-->
         <template v-else>
           <slot name="display" :current-music="currentMusic" :play-stat="playStat">
-            <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc" />
+            <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc"/>
           </slot>
           <controls
               :shuffle="shouldShuffle"
@@ -52,13 +52,13 @@
     </div>
     <audio ref="audio"></audio>
     <music-list
-      :show="showList && !mini"
-      :current-music="currentMusic"
-      :music-list="musicList"
-      :play-index="playIndex"
-      :listmaxheight="listMaxHeight"
-      :theme="currentTheme"
-      @selectsong="onSelectSong"
+        :show="showList && !mini"
+        :current-music="currentMusic"
+        :music-list="musicList"
+        :play-index="playIndex"
+        :listmaxheight="listMaxHeight"
+        :theme="currentTheme"
+        @selectsong="onSelectSong"
     />
   </div>
 </template>
@@ -90,7 +90,7 @@
     NO_REPEAT: 'no-repeat',
     REPEAT_ONE: 'repeat-one',
     REPEAT_ALL: 'repeat-all',
-  };
+  }
 
   const VueAPlayer = {
     name: 'APlayer',
@@ -115,6 +115,10 @@
       mini: {
         type: Boolean,
         default: false,
+      },
+      width: {
+        type: String,
+        default: 'auto',
       },
       isLoaded: {
         type: Boolean,
@@ -320,6 +324,7 @@
         return {
           transform: `translate(${this.floatOffsetLeft}px, ${this.floatOffsetTop}px)`,
           webkitTransform: `translate(${this.floatOffsetLeft}px, ${this.floatOffsetTop}px)`,
+          width: this.width,
         }
       },
       currentPicStyleObj () {
@@ -728,43 +733,20 @@
           this.setSelfAdaptingTheme()
 
           const src = music.src
-          // HLS support
-          if (/\.m3u8(?=(#|\?|$))/.test(src)) {
-            if (this.audio.canPlayType('application/x-mpegURL') || this.audio.canPlayType('application/vnd.apple.mpegURL')) {
-              this.audio.src = src
-            } else {
-              try {
-                const Hls = require('hls.js')
-                if (Hls.isSupported()) {
-                  if (!this.hls) {
-                    this.hls = new Hls()
-                  }
-                  this.hls.loadSource(src)
-                  this.hls.attachMedia(this.audio)
-                } else {
-                  warn('HLS is not supported on your browser')
-                  this.audio.src = src
-                }
-              } catch (e) {
-                warn('hls.js is required to support m3u8')
-                this.audio.src = src
-              }
-            }
-          } else {
-            // this.audio.src = src
 
-            if (typeof src === 'string') {
-              this.audio.src = src
-              console.log('play string')
-            } else {
-              src.forEach((item) => {
-                const $src = document.createElement('source')
-                $src.src = item.src
-                $src.type = item.type
-                this.audio.appendChild($src)
-                console.log('play array')
-              })
-            }
+          if (typeof src === 'undefined') {
+            return
+          }
+
+          if (typeof src === 'string') {
+            this.audio.src = src
+          } else {
+            src.forEach((item) => {
+              const $src = document.createElement('source')
+              $src.src = item.src
+              $src.type = item.type
+              this.audio.appendChild($src)
+            })
           }
           // self-adapting theme color
         },
