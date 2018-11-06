@@ -233,6 +233,7 @@
       return {
         internalMusic: this.music,
         isPlaying: false,
+        isCanPlayed: false,
         isSeeking: false,
         wasPlayingBeforeSeeking: false,
         isMobile: /mobile/i.test(window.navigator.userAgent),
