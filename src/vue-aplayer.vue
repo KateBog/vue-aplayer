@@ -21,13 +21,13 @@
           @dragging="onDragAround"
       />
       <div class="aplayer-info" v-show="!mini">
-        <slot v-if="!isLoaded">
-        </slot>
+        <!--<slot v-if="!isLoaded">-->
+        <!--</slot>-->
         <!--<div class="aplayer-music">-->
         <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
         <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
         <!--</div>-->
-        <template v-else>
+        <template>
           <slot name="display" :current-music="currentMusic" :play-stat="playStat">
             <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc"/>
           </slot>
@@ -442,11 +442,11 @@
       // play/pause
 
       toggle () {
-        if (!this.isLoaded) {
-          this.$emit('load')
-
-          return
-        }
+        // if (!this.isLoaded) {
+        //   this.$emit('load')
+        //
+        //   return
+        // }
 
         if (!this.audio.paused) {
           this.pause()
@@ -671,7 +671,7 @@
           'waiting',
         ]
         mediaEvents.forEach(event => {
-          this.audio.addEventListener(event, e => this.$emit(event, e))
+          this.audio.addEventListener(event, e => this.$emit(event, e, this))
         })
 
 
@@ -690,6 +690,19 @@
         this.audio.addEventListener('timeupdate', this.onAudioTimeUpdate)
         this.audio.addEventListener('volumechange', this.onAudioVolumeChange)
         this.audio.addEventListener('ended', this.onAudioEnded)
+
+        const src = this.music.src
+
+        if (typeof src === 'string') {
+          this.audio.src = src
+        } else {
+          src.forEach((item) => {
+            const $src = document.createElement('source')
+            $src.src = item.src
+            $src.type = item.type
+            this.audio.appendChild($src)
+          })
+        }
       },
 
       setSelfAdaptingTheme () {
@@ -719,13 +732,15 @@
         this.internalMusic = music
       },
 
-      isLoaded (value) {
-        if (value && this.src !== null) {
-          this.$nextTick(() => {
-            this.play()
-          })
-        }
-      },
+      // isLoaded (value) {
+      //   this.$nextTick(() => {
+      //     console.log('PLAing')
+      //     setInterval(() => {
+      //       console.log('run')
+      //       this.play()
+      //     }, 1000)
+      //   })
+      // },
 
       currentMusic: {
         handler (music) {
