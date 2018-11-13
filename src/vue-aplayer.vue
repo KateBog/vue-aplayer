@@ -757,6 +757,10 @@
           if (typeof src === 'string') {
             this.audio.src = src
           } else {
+            while (this.audio.firstChild) {
+              this.audio.removeChild(this.audio.firstChild)
+            }
+
             src.forEach((item) => {
               const $src = document.createElement('source')
               $src.src = item.src
