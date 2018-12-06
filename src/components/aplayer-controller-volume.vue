@@ -1,7 +1,7 @@
 <template>
   <div class="aplayer-volume-wrap">
     <icon-button
-      :class="`aplayer-icon-${volumeIcon}`"
+      :class="'aplayer-icon-' + volumeIcon"
       :icon="volumeIcon"
       @click.native="$emit('togglemute')"
     />
@@ -13,7 +13,7 @@
         <div
           class="aplayer-volume"
           :style="{
-            height: muted ? 0 : `${Math.trunc(volume * 100)}%`,
+            height: muted ? 0 : Math.trunc(volume * 100) + '%',
             background: theme
           }"
         >
