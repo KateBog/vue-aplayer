@@ -93,7 +93,8 @@
     position: relative;
     height: $aplayer-height;
     width: $aplayer-height;
-    background-image: url(../default.jpg);
+    /*background-image: url(../default.jpg);*/
+    background-color: #35495e;
     background-size: cover;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -133,17 +134,18 @@
     }
 
     .aplayer-pause {
-      width: 16px;
-      height: 16px;
+      width: 26px;
+      height: 26px;
       border: 2px solid #fff;
-      bottom: 4px;
-      right: 4px;
+      bottom: 50%;
+      right: 50%;
+      margin: 0 -15px -15px 0;
       .aplayer-icon-pause {
         position: absolute;
-        top: 2px;
+        top: 3px;
         left: 2px;
-        height: 12px;
-        width: 12px;
+        height: 20px;
+        width: 22px;
       }
     }
   }

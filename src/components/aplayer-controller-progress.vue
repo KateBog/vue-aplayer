@@ -8,11 +8,11 @@
     <div class="aplayer-bar">
       <div
         class="aplayer-loaded"
-        :style="{width: `${loadProgress * 100}%`}">
+        :style="{width: loadProgress * 100 + '%'}">
       </div>
       <div
         class="aplayer-played"
-        :style="{width: `${playProgress * 100}%`, background: theme}"
+        :style="{width: playProgress * 100 + '%', background: theme}"
       >
         <span
           ref="thumb"

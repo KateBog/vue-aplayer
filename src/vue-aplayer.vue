@@ -1,60 +1,64 @@
 <template>
   <div
-    class="aplayer"
-    :class="{
-      'aplayer-narrow': isMiniMode,
-      'aplayer-withlist' : !isMiniMode && musicList.length > 0,
-      'aplayer-withlrc': !isMiniMode && (!!$slots.display || shouldShowLrc),
+      class="aplayer"
+      :class="{
+      'aplayer-mini': mini,
+      'aplayer-withlist' : !mini && musicList.length > 0,
+      'aplayer-withlrc': !mini && (!!$slots.display || showLrc),
       'aplayer-float': isFloatMode,
       'aplayer-loading': isPlaying && isLoading
     }"
-    :style="floatStyleObj"
+      :style="floatStyleObj"
   >
     <div class="aplayer-body">
       <thumbnail
-        :pic="currentMusic.pic"
-        :playing="isPlaying"
-        :enable-drag="isFloatMode"
-        :theme="currentTheme"
-        @toggleplay="toggle"
-        @dragbegin="onDragBegin"
-        @dragging="onDragAround"
-      />
-      <div class="aplayer-info" v-show="!isMiniMode">
-        <div class="aplayer-music">
-          <span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>
-          <span class="aplayer-author">{{ currentMusic.artist || currentMusic.author || 'Unknown' }}</span>
-        </div>
-        <slot name="display" :current-music="currentMusic" :play-stat="playStat">
-          <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="shouldShowLrc" />
-        </slot>
-        <controls
-          :shuffle="shouldShuffle"
-          :repeat="repeatMode"
-          :stat="playStat"
-          :volume="audioVolume"
-          :muted="isAudioMuted"
+          :pic="currentMusic.pic"
+          :playing="isPlaying"
+          :enable-drag="isFloatMode"
           :theme="currentTheme"
-          @toggleshuffle="shouldShuffle = !shouldShuffle"
-          @togglelist="showList = !showList"
-          @togglemute="toggleMute"
-          @setvolume="setAudioVolume"
-          @dragbegin="onProgressDragBegin"
-          @dragend="onProgressDragEnd"
-          @dragging="onProgressDragging"
-          @nextmode="setNextMode"
-        />
+          @toggleplay="toggle"
+          @dragbegin="onDragBegin"
+          @dragging="onDragAround"
+      />
+      <div class="aplayer-info" v-show="!mini">
+        <!--<slot v-if="!isLoaded">-->
+        <!--</slot>-->
+        <!--<div class="aplayer-music">-->
+        <!--<span class="aplayer-title">{{ currentMusic.title || 'Untitled' }}</span>-->
+        <!--<span class="aplayer-author">{{ currentMusic.artist || 'Unknown' }}</span>-->
+        <!--</div>-->
+        <template>
+          <slot name="display" :current-music="currentMusic" :play-stat="playStat">
+            <lyrics :current-music="currentMusic" :play-stat="playStat" v-if="showLrc"/>
+          </slot>
+          <controls
+              :shuffle="shouldShuffle"
+              :repeat="repeatMode"
+              :stat="playStat"
+              :volume="audioVolume"
+              :muted="isAudioMuted"
+              :theme="currentTheme"
+              @toggleshuffle="shouldShuffle = !shouldShuffle"
+              @togglelist="showList = !showList"
+              @togglemute="toggleMute"
+              @setvolume="setAudioVolume"
+              @dragbegin="onProgressDragBegin"
+              @dragend="onProgressDragEnd"
+              @dragging="onProgressDragging"
+              @nextmode="setNextMode"
+          />
+        </template>
       </div>
     </div>
     <audio ref="audio"></audio>
     <music-list
-      :show="showList && !isMiniMode"
-      :current-music="currentMusic"
-      :music-list="musicList"
-      :play-index="playIndex"
-      :listmaxheight="listmaxheight || listMaxHeight"
-      :theme="currentTheme"
-      @selectsong="onSelectSong"
+        :show="showList && !mini"
+        :current-music="currentMusic"
+        :music-list="musicList"
+        :play-index="playIndex"
+        :listmaxheight="listMaxHeight"
+        :theme="currentTheme"
+        @selectsong="onSelectSong"
     />
   </div>
 </template>
@@ -64,7 +68,8 @@
   import MusicList from './components/aplayer-list.vue'
   import Controls from './components/aplayer-controller.vue'
   import Lyrics from './components/aplayer-lrc.vue'
-  import { deprecatedProp, versionCompare, warn } from './utils'
+  import { versionCompare, warn } from './utils'
+  import 'promise-polyfill/src/polyfill'
 
   let versionBadgePrinted = false
   const canUseSync = versionCompare(Vue.version, '2.3.0') >= 0
@@ -86,7 +91,7 @@
     NO_REPEAT: 'no-repeat',
     REPEAT_ONE: 'repeat-one',
     REPEAT_ALL: 'repeat-all',
-  };
+  }
 
   const VueAPlayer = {
     name: 'APlayer',
@@ -100,16 +105,7 @@
     props: {
       music: {
         type: Object,
-        required: true,
-        validator (song) {
-          if (song.url) {
-            deprecatedProp('music.url', '1.4.0', 'music.src')
-          }
-          if (song.author) {
-            deprecatedProp('music.author', '1.4.1', 'music.artist')
-          }
-          return song.src || song.url
-        },
+        required: false,
       },
       list: {
         type: Array,
@@ -118,6 +114,14 @@
         },
       },
       mini: {
+        type: Boolean,
+        default: false,
+      },
+      width: {
+        type: String,
+        default: 'auto',
+      },
+      isLoaded: {
         type: Boolean,
         default: false,
       },
@@ -225,66 +229,12 @@
         type: String,
         default: REPEAT.NO_REPEAT,
       },
-
-
-      // deprecated props
-
-      /**
-       * @deprecated since 1.1.2, use listMaxHeight instead
-       */
-      listmaxheight: {
-        type: String,
-        validator (value) {
-          if (value) {
-            deprecatedProp('listmaxheight', '1.1.2', 'listMaxHeight')
-          }
-          return true
-        },
-      },
-      /**
-       * @deprecated since 1.1.2, use mini instead
-       */
-      narrow: {
-        type: Boolean,
-        default: false,
-        validator (value) {
-          if (value) {
-            deprecatedProp('narrow', '1.1.2', 'mini')
-          }
-          return true
-        },
-      },
-      /**
-       * @deprecated since 1.2.2
-       */
-      showlrc: {
-        type: Boolean,
-        default: false,
-        validator (value) {
-          if (value) {
-            deprecatedProp('showlrc', '1.2.2', 'showLrc')
-          }
-          return true
-        },
-      },
-      /**
-       * @deprecated and REMOVED since 1.5.0
-       */
-      // mode: {
-      //   type: String,
-      //   default: 'circulation',
-      //   validator (value) {
-      //     if (value) {
-      //       deprecatedProp('mode', '1.5.0', 'shuffle and repeat')
-      //     }
-      //     return true
-      //   }
-      // },
     },
     data () {
       return {
         internalMusic: this.music,
         isPlaying: false,
+        isCanPlayed: false,
         isSeeking: false,
         wasPlayingBeforeSeeking: false,
         isMobile: /mobile/i.test(window.navigator.userAgent),
@@ -347,13 +297,6 @@
           this.internalMusic = val
         },
       },
-      // compatible for deprecated props
-      isMiniMode () {
-        return this.mini || this.narrow
-      },
-      shouldShowLrc () {
-        return this.showLrc || this.showlrc
-      },
 
       // props wrappers
 
@@ -373,7 +316,7 @@
       shouldShowNativeControls () {
         return process.env.NODE_ENV !== 'production' &&
           this.controls &&
-          !this.isMiniMode
+          !this.mini
       },
 
       // useful
@@ -383,6 +326,7 @@
         return {
           transform: `translate(${this.floatOffsetLeft}px, ${this.floatOffsetTop}px)`,
           webkitTransform: `translate(${this.floatOffsetLeft}px, ${this.floatOffsetTop}px)`,
+          width: this.width,
         }
       },
       currentPicStyleObj () {
@@ -500,6 +444,12 @@
       // play/pause
 
       toggle () {
+        // if (!this.isLoaded) {
+        //   this.$emit('load')
+        //
+        //   return
+        // }
+
         if (!this.audio.paused) {
           this.pause()
         } else {
@@ -723,7 +673,7 @@
           'waiting',
         ]
         mediaEvents.forEach(event => {
-          this.audio.addEventListener(event, e => this.$emit(event, e))
+          this.audio.addEventListener(event, e => this.$emit(event, e, this))
         })
 
 
@@ -743,9 +693,17 @@
         this.audio.addEventListener('volumechange', this.onAudioVolumeChange)
         this.audio.addEventListener('ended', this.onAudioEnded)
 
+        const src = this.music.src
 
-        if (this.currentMusic) {
-          this.audio.src = this.currentMusic.src || this.currentMusic.url
+        if (typeof src === 'string') {
+          this.audio.src = src
+        } else {
+          src.forEach((item) => {
+            const $src = document.createElement('source')
+            $src.src = item.src
+            $src.type = item.type
+            this.audio.appendChild($src)
+          })
         }
       },
 
@@ -776,36 +734,40 @@
         this.internalMusic = music
       },
 
+      // isLoaded (value) {
+      //   this.$nextTick(() => {
+      //     console.log('PLAing')
+      //     setInterval(() => {
+      //       console.log('run')
+      //       this.play()
+      //     }, 1000)
+      //   })
+      // },
+
       currentMusic: {
         handler (music) {
           // async
           this.setSelfAdaptingTheme()
 
-          const src = music.src || music.url
-          // HLS support
-          if (/\.m3u8(?=(#|\?|$))/.test(src)) {
-            if (this.audio.canPlayType('application/x-mpegURL') || this.audio.canPlayType('application/vnd.apple.mpegURL')) {
-              this.audio.src = src
-            } else {
-              try {
-                const Hls = require('hls.js')
-                if (Hls.isSupported()) {
-                  if (!this.hls) {
-                    this.hls = new Hls()
-                  }
-                  this.hls.loadSource(src)
-                  this.hls.attachMedia(this.audio)
-                } else {
-                  warn('HLS is not supported on your browser')
-                  this.audio.src = src
-                }
-              } catch (e) {
-                warn('hls.js is required to support m3u8')
-                this.audio.src = src
-              }
-            }
-          } else {
+          const src = music.src
+
+          if (typeof src === 'undefined') {
+            return
+          }
+
+          if (typeof src === 'string') {
             this.audio.src = src
+          } else {
+            while (this.audio.firstChild) {
+              this.audio.removeChild(this.audio.firstChild)
+            }
+
+            src.forEach((item) => {
+              const $src = document.createElement('source')
+              $src.src = item.src
+              $src.type = item.type
+              this.audio.appendChild($src)
+            })
           }
           // self-adapting theme color
         },
@@ -884,7 +846,7 @@
     margin: 5px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.07), 0 1px 5px 0 rgba(0, 0, 0, 0.1);
     border-radius: 2px;
-    overflow: hidden;
+    overflow: visible;
     user-select: none;
     line-height: initial;
 
@@ -909,7 +871,7 @@
         padding: 14px 7px 0 10px;
         height: $aplayer-height;
         box-sizing: border-box;
-        overflow: hidden;
+        overflow: visible;
 
         .aplayer-music {
           flex-grow: 1;
@@ -944,7 +906,7 @@
     }
 
     // Mini mode
-    &.aplayer-narrow {
+    &.aplayer-mini {
       width: $aplayer-height;
     }
 

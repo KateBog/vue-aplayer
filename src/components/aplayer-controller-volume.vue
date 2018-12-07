@@ -1,7 +1,7 @@
 <template>
   <div class="aplayer-volume-wrap">
     <icon-button
-      :class="`aplayer-icon-${volumeIcon}`"
+      :class="'aplayer-icon-' + volumeIcon"
       :icon="volumeIcon"
       @click.native="$emit('togglemute')"
     />
@@ -13,7 +13,7 @@
         <div
           class="aplayer-volume"
           :style="{
-            height: muted ? 0 : `${Math.trunc(volume * 100)}%`,
+            height: muted ? 0 : mathTrunc(volume * 100) + '%',
             background: theme
           }"
         >
@@ -26,6 +26,7 @@
 <script>
   import IconButton from './aplayer-iconbutton.vue'
   import {getElementViewTop} from '../utils'
+  import mathTrunc from 'math-trunc'
 
   const barHeight = 40
 
@@ -42,6 +43,7 @@
       },
     },
     methods: {
+      mathTrunc,
       adjustVolume (e) {
         let percentage = (barHeight - e.clientY + getElementViewTop(this.$refs.bar)) / barHeight
         percentage = percentage > 0 ? percentage : 0

@@ -1,44 +1,44 @@
 <template>
   <div class="aplayer-controller">
     <v-progress
-      :loadProgress="loadProgress"
-      :playProgress="playProgress"
-      :theme="theme"
-      @dragbegin="val => $emit('dragbegin', val)"
-      @dragend="val => $emit('dragend', val)"
-      @dragging="val => $emit('dragging', val)"
+        :loadProgress="loadProgress"
+        :playProgress="playProgress"
+        :theme="theme"
+        @dragbegin="val => $emit('dragbegin', val)"
+        @dragend="val => $emit('dragend', val)"
+        @dragging="val => $emit('dragging', val)"
     />
     <div class="aplayer-time">
       <div class="aplayer-time-inner">
-        - <span class="aplayer-ptime">{{secondToTime(stat.playedTime)}}</span> / <span
-        class="aplayer-dtime">{{secondToTime(stat.duration)}}</span>
+        <span class="aplayer-ptime">{{secondToTime(stat.playedTime)}}</span> / <span
+          class="aplayer-dtime">{{secondToTime(stat.duration)}}</span>
       </div>
       <volume
-        v-if="!$parent.isMobile"
-        :volume="volume"
-        :theme="theme"
-        :muted="muted"
-        @togglemute="$emit('togglemute')"
-        @setvolume="v => $emit('setvolume', v)"
+          v-if="!$parent.isMobile"
+          :volume="volume"
+          :theme="theme"
+          :muted="muted"
+          @togglemute="$emit('togglemute')"
+          @setvolume="v => $emit('setvolume', v)"
       />
-      <icon-button
-        class="aplayer-icon-mode"
-        icon="shuffle"
-        :class="{ 'inactive': !shuffle }"
-        @click.native="$emit('toggleshuffle')"
-      />
-      <icon-button
-        class="aplayer-icon-mode"
-        :icon="repeat === 'repeat-one' ? 'repeat-one' : 'repeat-all'"
-        :class="{ 'inactive': repeat === 'no-repeat'}"
-        @click.native="$emit('nextmode')"
-      />
-      <icon-button
-        class="aplayer-icon-menu"
-        icon="menu"
-        :class="{ 'inactive': !$parent.showList }"
-        @click.native="$emit('togglelist')"
-      />
+      <!--<icon-button-->
+          <!--class="aplayer-icon-mode"-->
+          <!--icon="shuffle"-->
+          <!--:class="{ 'inactive': !shuffle }"-->
+          <!--@click.native="$emit('toggleshuffle')"-->
+      <!--/>-->
+      <!--<icon-button-->
+          <!--class="aplayer-icon-mode"-->
+          <!--:icon="repeat === 'repeat-one' ? 'repeat-one' : 'repeat-all'"-->
+          <!--:class="{ 'inactive': repeat === 'no-repeat'}"-->
+          <!--@click.native="$emit('nextmode')"-->
+      <!--/>-->
+      <!--<icon-button-->
+          <!--class="aplayer-icon-menu"-->
+          <!--icon="menu"-->
+          <!--:class="{ 'inactive': !$parent.showList }"-->
+          <!--@click.native="$emit('togglelist')"-->
+      <!--/>-->
     </div>
   </div>
 </template>
@@ -47,6 +47,7 @@
   import IconButton from './aplayer-iconbutton.vue'
   import VProgress from './aplayer-controller-progress.vue'
   import Volume from './aplayer-controller-volume.vue'
+  import mathTrunc from 'math-trunc'
 
   export default {
     components: {
@@ -74,10 +75,10 @@
           return num < 10 ? '0' + num : '' + num
         }
 
-        const min = Math.trunc(second / 60)
-        const sec = Math.trunc(second - min * 60)
-        const hours = Math.trunc(min / 60)
-        const minAdjust = Math.trunc((second / 60) - (60 * Math.trunc((second / 60) / 60)))
+        const min = mathTrunc(second / 60)
+        const sec = mathTrunc(second - min * 60)
+        const hours = mathTrunc(min / 60)
+        const minAdjust = mathTrunc((second / 60) - (60 * mathTrunc((second / 60) / 60)))
         return second >= 3600 ? pad0(hours) + ':' + pad0(minAdjust) + ':' + pad0(sec) : pad0(min) + ':' + pad0(sec)
       },
     },
@@ -87,7 +88,6 @@
 <style lang="scss">
 
   .aplayer-controller {
-    display: flex;
     align-items: center;
     position: relative;
 
@@ -98,7 +98,8 @@
       height: 17px;
       color: #999;
       font-size: 11px;
-      padding-left: 7px;
+      padding-top: 4px;
+      padding-left: 0px;
 
       .aplayer-volume-wrap {
         margin-left: 4px;
