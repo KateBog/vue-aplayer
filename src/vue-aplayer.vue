@@ -68,7 +68,8 @@
   import MusicList from './components/aplayer-list.vue'
   import Controls from './components/aplayer-controller.vue'
   import Lyrics from './components/aplayer-lrc.vue'
-  import { deprecatedProp, versionCompare, warn } from './utils'
+  import { versionCompare, warn } from './utils'
+  import 'promise-polyfill/src/polyfill'
 
   let versionBadgePrinted = false
   const canUseSync = versionCompare(Vue.version, '2.3.0') >= 0
