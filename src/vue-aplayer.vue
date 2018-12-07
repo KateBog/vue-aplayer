@@ -69,7 +69,6 @@
   import Controls from './components/aplayer-controller.vue'
   import Lyrics from './components/aplayer-lrc.vue'
   import { versionCompare, warn } from './utils'
-  import 'promise-polyfill/src/polyfill'
 
   let versionBadgePrinted = false
   const canUseSync = versionCompare(Vue.version, '2.3.0') >= 0
