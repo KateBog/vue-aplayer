@@ -47,6 +47,7 @@
   import IconButton from './aplayer-iconbutton.vue'
   import VProgress from './aplayer-controller-progress.vue'
   import Volume from './aplayer-controller-volume.vue'
+  import mathTrunc from 'math-trunc'
 
   export default {
     components: {
@@ -74,10 +75,10 @@
           return num < 10 ? '0' + num : '' + num
         }
 
-        const min = Math.trunc(second / 60)
-        const sec = Math.trunc(second - min * 60)
-        const hours = Math.trunc(min / 60)
-        const minAdjust = Math.trunc((second / 60) - (60 * Math.trunc((second / 60) / 60)))
+        const min = mathTrunc(second / 60)
+        const sec = mathTrunc(second - min * 60)
+        const hours = mathTrunc(min / 60)
+        const minAdjust = mathTrunc((second / 60) - (60 * mathTrunc((second / 60) / 60)))
         return second >= 3600 ? pad0(hours) + ':' + pad0(minAdjust) + ':' + pad0(sec) : pad0(min) + ':' + pad0(sec)
       },
     },
